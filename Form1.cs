@@ -22,7 +22,7 @@ namespace JINZHIZHUANGHUAN
             {
                 // 1. 获取本机IPv4地址段（返回4个int）
                 int[] ip = Program.GetIp();
-
+                MessageBox.Show("获取到的IP是：" + string.Join(".", ip));
                 // 2. 加密处理：每段IP加上日期并转成八进制
                 int[] encrypted = Program.Encryption(ip);
 
