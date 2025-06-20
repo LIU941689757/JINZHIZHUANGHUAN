@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace JINZHIZHUANGHUAN
 {
@@ -62,27 +63,21 @@ namespace JINZHIZHUANGHUAN
         /// <returns>加密后的4个八进制整数</returns>
         public static int[] Encryption(int[] ipParts)
         {
-            if (ipParts == null || ipParts.Length != 4)
-                throw new ArgumentException("IP地址段无效");
-
-            // 获取当前日期的MMdd形式（如 0620 → 620）
             int dateInt = int.Parse(DateTime.Now.ToString("MMdd"));
-
             int[] encrypted = new int[4];
 
             for (int i = 0; i < 4; i++)
             {
-                // 每段IP加上日期值
                 int added = ipParts[i] + dateInt;
-
-                // 转为八进制字符串
                 string octStr = Convert.ToString(added, 8);
-
-                // 再转为整数存入结果中
                 encrypted[i] = int.Parse(octStr);
+
+                // 调试输出
+                MessageBox.Show($"段{i + 1}: 原={ipParts[i]}, 加后={added}, 八进制={octStr}, 最终={encrypted[i]}");
             }
 
             return encrypted;
         }
+
     }
 }
