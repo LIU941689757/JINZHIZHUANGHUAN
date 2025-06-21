@@ -84,8 +84,8 @@ namespace JINZHIZHUANGHUAN
             // 返回加密结果
             return encrypted;
         }
-
-
-
+        /// <summary>
+        /// EXCEL解密 C3到F3的格子
+        /// =IF(C3="", "", OCT2DEC(C3) - (MONTH(TODAY())*100 + DAY(TODAY())))    
     }
 }
