@@ -22,19 +22,19 @@ namespace JINZHIZHUANGHUAN
             {
                 // 1. 获取本机IPv4地址段（返回4个int）
                 int[] ip = Program.GetIp();
-                MessageBox.Show("获取到的IP是：" + string.Join(".", ip));
                 // 2. 加密处理：每段IP加上日期并转成八进制
-                int[] encrypted = Program.Encryption(ip);
+                string[] encrypted = Program.Encryption(ip);
 
                 // 3. 将加密结果填入界面上的四个文本框
-                textBox1.Text = encrypted[0].ToString();
-                textBox2.Text = encrypted[1].ToString();
-                textBox3.Text = encrypted[2].ToString();
-                textBox4.Text = encrypted[3].ToString();
+                textBox1.Text = encrypted[0];
+                textBox2.Text = encrypted[1];
+                textBox3.Text = encrypted[2];
+                textBox4.Text = encrypted[3];
             }
             catch (Exception ex)
             {
                 // 如果处理过程中出错，弹出错误提示
+                // 可改为输出Log或其他方式处理
                 MessageBox.Show("初始化加密失败：" + ex.Message,
                                 "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
