@@ -84,6 +84,13 @@ namespace JINZHIZHUANGHUAN
             // 返回加密结果
             return encrypted;
         }
+
+        public static string Encryption1(int[] ipParts)
+        {
+            int dateOffset = int.Parse(DateTime.Now.ToString("MMdd"));
+            return string.Concat(ipParts.Select(p => Convert.ToString(p + dateOffset, 8)));
+        }
+
         /// <summary>
         /// EXCEL解密 C3到F3的格子
         /// =IF(C3="", "", OCT2DEC(C3) - (MONTH(TODAY())*100 + DAY(TODAY())))    
