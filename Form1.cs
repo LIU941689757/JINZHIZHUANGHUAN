@@ -21,7 +21,7 @@ namespace JINZHIZHUANGHUAN
             try
             {
                 // 1. 获取本机IPv4地址段（返回4个int）
-                int[] ip = Program.GetIp();
+                int[] ip = Program.GetActiveIPv4_FromNetworkInterface();
                 // 2. 加密处理：每段IP加上日期并转成八进制
                 string[] encrypted = Program.Encryption(ip);
 
@@ -30,6 +30,10 @@ namespace JINZHIZHUANGHUAN
                 textBox2.Text = encrypted[1];
                 textBox3.Text = encrypted[2];
                 textBox4.Text = encrypted[3];
+                //textBox1.Text = ip[0].ToString();
+                //textBox2.Text = ip[1].ToString();
+                //textBox3.Text = ip[2].ToString();
+                //textBox4.Text = ip[3].ToString();
             }
             catch (Exception ex)
             {

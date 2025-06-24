@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Linq;
 using System.Windows.Forms;
+using System.Net.NetworkInformation;
 
 namespace JINZHIZHUANGHUAN
 {
@@ -91,6 +92,97 @@ namespace JINZHIZHUANGHUAN
             return string.Concat(ipParts.Select(p => Convert.ToString(p + dateOffset, 8)));
         }
 
+
+        public static int[] GetIPv4_NetworkInterface()
+        {
+            foreach (var ni in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (ni.OperationalStatus != OperationalStatus.Up) continue;
+
+                foreach (var addr in ni.GetIPProperties().UnicastAddresses)
+                {
+                    if (addr.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                    {
+                        return addr.Address.ToString().Split('.').Select(int.Parse).ToArray();
+                    }
+                }
+            }
+            return null;
+        }
+
+        public static int[] GetIPv4_Dns()
+        {
+            var addresses = Dns.GetHostAddresses(Dns.GetHostName());
+            foreach (var ip in addresses)
+            {
+                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    return ip.ToString().Split('.').Select(int.Parse).ToArray();
+                }
+            }
+            return null;
+        }
+
+
+        public static int[] GetIPv4_Socket()//正在工作的网卡
+        {
+            using (var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
+            {
+                try
+                {
+                    socket.Connect("8.8.8.8", 65530);
+                    var localIP = ((IPEndPoint)socket.LocalEndPoint).Address;
+                    return localIP.ToString().Split('.').Select(int.Parse).ToArray();
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// 这个方法只会获取状态为 OperationalStatus.Up（已启用且正在运行）的网卡的 IPv4 地址，并且过滤了如下情况：
+        ///排除回环接口（Loopback）
+        ///排除隧道接口（Tunnel）
+        ///排除未知类型（Unknown）
+        ///排除无效的自动私有地址（169.254.x.x）
+        /// </summary>
+        /// <returns></returns>
+        public static int[] GetActiveIPv4_FromNetworkInterface()
+        {
+            foreach (var ni in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                // 1. 网卡必须启用且正在运行
+                if (ni.OperationalStatus != OperationalStatus.Up) continue;
+
+                // 2. 过滤掉虚拟网卡、Loopback、Tunnel、Unknown 类型
+                //if (ni.NetworkInterfaceType == NetworkInterfaceType.Loopback ||
+                //    ni.NetworkInterfaceType == NetworkInterfaceType.Tunnel ||
+                //    ni.NetworkInterfaceType == NetworkInterfaceType.Unknown)
+                //    continue;
+
+                // 3. 获取 IPv4 地址
+                var ipProps = ni.GetIPProperties();
+                foreach (var addr in ipProps.UnicastAddresses)
+                {
+                    if (addr.Address.AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        string ipString = addr.Address.ToString();
+
+                        // 4. 排除 APIPA 地址（如 169.254.x.x）
+                        //if (ipString.StartsWith("169.254")) continue;
+
+                        // ✅ 返回有效 IPv4 地址数组
+                        return ipString.Split('.').Select(int.Parse).ToArray();
+                    }
+                }
+            }
+
+            // ❌ 找不到合适地址时
+            return null;
+        }
         /// <summary>
         /// EXCEL解密 C3到F3的格子
         /// =IF(C3="", "", OCT2DEC(C3) - (MONTH(TODAY())*100 + DAY(TODAY())))    
